@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/WAFBImpl.iml" filepath="$PROJECT_DIR$/WAFBImpl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wa_facebook/wa_facebook.iml" filepath="$PROJECT_DIR$/wa_facebook/wa_facebook.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="wa_sdk_interface_v3.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/wa_facebook/libs/wa_sdk_interface_v3.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

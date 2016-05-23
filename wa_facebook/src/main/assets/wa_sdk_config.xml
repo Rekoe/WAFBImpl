@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <version val="FB3.4"/>
+    <comps>
+        <comp module="CORE" plaf="FACEBOOK" value="com.wa.sdk.fb.core.WAFBCore" desc="Facebook渠道核心类"/>
+        <comp module="USR" plaf="FACEBOOK" value="com.wa.sdk.fb.user.WAFBUser" desc="Facebook用户账户"/>
+        <comp module="TRA" plaf="FACEBOOK" value="com.wa.sdk.fb.track.WAFBTrack" desc="Facebook数据收集"/>
+        <comp module="SOC" plaf="FACEBOOK" value="com.wa.sdk.fb.social.WAFBSocial" desc="Facebook社交"/>
+    </comps>
+</config>

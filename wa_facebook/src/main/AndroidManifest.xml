@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wa.sdk.fb">
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+
+        <!-- Facebook START -->
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@style/FacebookActivityStyle" />
+
+        <!--<provider-->
+            <!--android:name="com.facebook.FacebookContentProvider"-->
+            <!--android:authorities="com.facebook.app.FacebookContentProvider${1}"-->
+            <!--android:exported="true" />-->
+         <!--Facebook END-->
+    </application>
+
+</manifest>

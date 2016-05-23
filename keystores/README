@@ -1,0 +1,16 @@
+
+storeFile file 'android-cert-dev.jks'
+storePassword '123456'
+
+keyAlias 'pcl-sdk-cert-dev'
+keyPassword '123456'
+
+
+signingConfigs {
+        release {
+            storeFile file("de_key")
+            storePassword "sevenu1021"
+            keyAlias "tips"
+            keyPassword "sevenu1021"
+        }
+    }
