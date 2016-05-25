@@ -6,7 +6,7 @@ package com.wa.sdk.fb;
  */
 public final class WAFBVersion {
     
-    public static final String BUILD = "FB3.4";
+    public static final String BUILD = "FB3.4.2";
 
     public static String SDK_VER = BUILD;
 }
