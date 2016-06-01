@@ -24,6 +24,12 @@ public class WAFBUser implements WAIUser {
     }
 
     @Override
+    public void loginWA(String userId, String token, String platform, String platformUserId,
+                        String platformToken, WACallback<WALoginResult> callback) {
+
+    }
+
+    @Override
     public void login(Activity activity, boolean onlyLoginPlatform,
                       WACallback<WALoginResult> callback, String extInfo) {
         WAFBLogin.getInstance().login(activity, onlyLoginPlatform, callback, extInfo);

@@ -36,6 +36,11 @@ public class WAFBCore implements WAICore {
     }
 
     @Override
+    public String getClientId(Context context) {
+        return null;
+    }
+
+    @Override
     public void reportInstallCampaign(Context context) {
 
     }

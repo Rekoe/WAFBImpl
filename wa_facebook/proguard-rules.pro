@@ -18,8 +18,18 @@
 
 #-keep class com.facebook.**
 
--keep class com.wa.sdk.fb.core.WAFBCore { *; }
--keep class com.wa.sdk.fb.core.WAFBTool { *; }
--keep class com.wa.sdk.fb.social.WAFBSocial { *; }
--keep class com.wa.sdk.fb.track.WAFBTrack { *; }
--keep class com.wa.sdk.fb.user.WAFBUser { *; }
+-keep class com.wa.sdk.fb.core.WAFBCore {
+    public *;
+}
+-keep class com.wa.sdk.fb.core.WAFBTool {
+    public *;
+}
+-keep class com.wa.sdk.fb.social.WAFBSocial {
+    public *;
+}
+-keep class com.wa.sdk.fb.track.WAFBTrack {
+    public *;
+}
+-keep class com.wa.sdk.fb.user.WAFBUser {
+    public *;
+}

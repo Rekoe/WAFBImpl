@@ -17,8 +17,10 @@ import com.wa.sdk.common.model.WACallback;
 import com.wa.sdk.common.model.WACallbackManagerImpl;
 import com.wa.sdk.common.utils.LogUtil;
 import com.wa.sdk.common.utils.StringUtil;
+import com.wa.sdk.core.WAComponentFactory;
 import com.wa.sdk.fb.WAFBConstants;
 import com.wa.sdk.fb.WAFacebook;
+import com.wa.sdk.user.WAIUser;
 import com.wa.sdk.user.model.WALoginResult;
 
 import org.json.JSONArray;
@@ -47,7 +49,8 @@ public class WAFBLogin extends WAFacebook {
     private boolean mInitialized = false;
     private boolean mOnlyLoginPlatform = false;
 
-    private Object mWALoginObject = null;
+//    private Object mWALoginObject = null;
+private WAIUser mWAUser;
 
     private WAFBLogin() {
         registerCallbackImpl(mCallbackManager,
@@ -68,11 +71,11 @@ public class WAFBLogin extends WAFacebook {
                     if(mOnlyLoginPlatform) {
                         if(null != mWACallback) {
                             result.setCode(WACallback.CODE_SUCCESS);
-                            result.setMessage("FacebookLogin Facebook success");
+                            result.setMessage("Login Facebook success");
                             result.setPlatform(WAConstants.CHANNEL_FACEBOOK);
                             result.setPlatformUserId(accessToken.getUserId());
                             result.setPlatformToken(accessToken.getToken());
-                            mWACallback.onSuccess(WACallback.CODE_SUCCESS, "FacebookLogin google success\"", result);
+                            mWACallback.onSuccess(WACallback.CODE_SUCCESS, "Login Facebook success\"", result);
                         }
                         return;
                     }
@@ -126,7 +129,7 @@ public class WAFBLogin extends WAFacebook {
                 } else {
                     if(null != mWACallback) {
                         mWACallback.onError(WACallback.CODE_ERROR,
-                                "FacebookLogin with facebook failed: return data is null", null, null);
+                                "Login with facebook failed: return data is null", null, null);
                     }
                 }
             }
@@ -142,7 +145,7 @@ public class WAFBLogin extends WAFacebook {
             public void onError(FacebookException error) {
                 if(null != mWACallback) {
                     mWACallback.onError(WACallback.CODE_ERROR,
-                            "FacebookLogin with facebook failed: with exception error", null, error);
+                            "Login with facebook failed: with exception error", null, error);
                 }
             }
         });
@@ -163,11 +166,10 @@ public class WAFBLogin extends WAFacebook {
         }
         Context appContext = context.getApplicationContext();
         mSharedPrefHelper = WASharedPrefHelper.newInstance(appContext, WAConfig.SHARE_PRE_LOGIN_CONFIG);
-        try {
-            initWALogin(appContext);
-        } catch (Exception e) {
-            LogUtil.e(WAFBConstants.TAG, "WAFacebook--Dependence of WA Sdk,"
-                    + "you need integrate WA Sdk first \n" + LogUtil.getStackTrace(e));
+
+        mWAUser = (WAIUser) WAComponentFactory.createComponent(WAConstants.CHANNEL_WA, WAConstants.MODULE_USER);
+        if(null != mWAUser) {
+            mWAUser.initialize(context);
         }
         mInitialized = true;
     }
@@ -325,19 +327,6 @@ public class WAFBLogin extends WAFacebook {
         return info;
     }
 
-    /**
-     * 初始化WA Login Sdk 部分<br/>
-     * 注意：通过反射调用WA Sdk，需要先集成WA Sdk
-     * @param context 上下文
-     * @throws Exception
-     */
-    public void initWALogin(Context context) throws Exception {
-        String className = "com.wa.sdk.wa.user.WALogin";
-        Class<?> cls = Class.forName(className);
-        mWALoginObject = cls.newInstance();
-        Method waInitMethod = mWALoginObject.getClass().getDeclaredMethod("initialize", Context.class);
-        waInitMethod.invoke(mWALoginObject, context);
-    }
 
     /**
      * 登陆WA后台<br/>
@@ -352,27 +341,14 @@ public class WAFBLogin extends WAFacebook {
     private void loginWA(String userId, String token, String platform,
                         String platformUserId, String platformToken,
                         WACallback<WALoginResult> callback) {
-        if(null == mWALoginObject) {
+        if(null == mWAUser) {
             if(null != callback) {
                 callback.onError(WACallback.CODE_ERROR, "Dependence of WA Sdk, " +
                         "you need integrate WA Sdk first", null, null);
             }
             return;
         }
-        try {
-            Method loginWAMethod = mWALoginObject.getClass().getDeclaredMethod("loginWA",
-                    String.class, String.class, String.class, String.class,
-                    String.class, WACallback.class);
-            loginWAMethod.invoke(mWALoginObject, userId, token, platform,
-                    platformUserId, platformToken, callback);
-        } catch (Exception e) {
-            LogUtil.e(WAFBConstants.TAG, "WAFacebook--Dependence of WA Sdk,"
-                    + "you need integrate WA Sdk first \n" + LogUtil.getStackTrace(e));
-            if(null != callback) {
-                callback.onError(WACallback.CODE_ERROR, "Dependence of WA Sdk, " +
-                        "you need integrate WA Sdk first", null, null);
-            }
-        }
+        mWAUser.loginWA(userId, token, platform, platformUserId, platformToken, callback);
     }
 
     /**
@@ -380,15 +356,8 @@ public class WAFBLogin extends WAFacebook {
      * 注意：通过反射调用WA Sdk，需要先集成WA Sdk
      */
     private void logoutWA() {
-        if(null == mWALoginObject) {
-            return;
-        }
-        try {
-            Method loginWAMethod = mWALoginObject.getClass().getDeclaredMethod("logout");
-            loginWAMethod.invoke(mWALoginObject);
-        } catch (Exception e) {
-            LogUtil.e(WAFBConstants.TAG, "WAFacebook--Dependence of WA Sdk,"
-                + "you need integrate WA Sdk first \n" + LogUtil.getStackTrace(e));
+        if(null != mWAUser) {
+            mWAUser.logout();
         }
     }
 

@@ -8,11 +8,11 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 8
-        versionName "3.4.2"
+        versionName "3.4.3"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -38,5 +38,5 @@ def getDate() {
 
 dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.10.0'
-    provided files("libs/wa_sdk_interface_v3.4.jar")
+    provided files("libs/wa_sdk_interface_v3.4.3.jar")
 }
