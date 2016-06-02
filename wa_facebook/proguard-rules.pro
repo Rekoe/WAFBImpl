@@ -22,8 +22,8 @@
 
 -keep class **.R$* { *; }
 
-#-keep class com.facebook.**
--keep class com.facebook.FacebookContentProvider { *; }
+-keep class com.facebook.** { *; }
+#-keep class com.facebook.FacebookContentProvider { *; }
 
 -keep class com.wa.sdk.fb.core.WAFBCore {
     public *;
