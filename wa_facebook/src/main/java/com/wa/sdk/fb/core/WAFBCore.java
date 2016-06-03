@@ -41,6 +41,11 @@ public class WAFBCore implements WAICore {
     }
 
     @Override
+    public boolean loadOnlineParameterAndWaite() {
+        return false;
+    }
+
+    @Override
     public void reportInstallCampaign(Context context) {
 
     }

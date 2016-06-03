@@ -12,6 +12,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.internal.ServerProtocol;
+import com.wa.sdk.WAConstants;
 import com.wa.sdk.common.WAConfig;
 import com.wa.sdk.common.WASharedPrefHelper;
 import com.wa.sdk.common.http.HttpRequest;
@@ -20,6 +21,9 @@ import com.wa.sdk.common.http.HttpStatus;
 import com.wa.sdk.common.model.WACallback;
 import com.wa.sdk.common.utils.LogUtil;
 import com.wa.sdk.common.utils.StringUtil;
+import com.wa.sdk.core.WAComponentFactory;
+import com.wa.sdk.core.WAICore;
+import com.wa.sdk.core.WASdkProperties;
 import com.wa.sdk.fb.WAFBConstants;
 import com.wa.sdk.fb.social.model.WAFBObjectResult;
 import com.wa.sdk.fb.social.model.WAFBPaging;
@@ -32,8 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,35 +137,21 @@ public class WAFBGraphObjects extends WAFBGameService {
             String facebookAppId = resources.getString(resId);
 
             if(StringUtil.isEmpty(facebookAppToken)) {
-                // 直接引用WA Sdk的加载Facebook secret key，这个方法需要在编译时以来WA Sdk
-//                WAParameterResult parameterResult = WASdkOnlineParameter.getInstance().loadParameterAndWait();
-//                String facebookSecret = parameterResult.getFbSecretKey();
-//                if(WACallback.CODE_ERROR == parameterResult.getCode() || StringUtil.isEmpty(facebookSecret)) {
-//                    // 获取facebook secret失败了
-//                    result.setCode(WACallback.CODE_ERROR);
-//                    result.setMessage("Load facebook secret key failed");
-//                    return result;
-//                }
-
-                // 这里用反射的方法调用WA SDK的加载Facebook secret key
-                String facebookSecret = null;
-                try {
-                    facebookSecret = loadFBSecretKeyAndWait();
-                } catch (Exception e) {
-                    LogUtil.e(WAFBConstants.TAG, "WAFBGraphObjects--Load facebook secret key " +
-                            "function dependence of WA Sdk， you need integrate WA Sdk first\n"
-                            + LogUtil.getStackTrace(e));
-                    result.setCode(WACallback.CODE_ERROR);
-                    result.setMessage("Load facebook secret key function dependence of WA Sdk, " +
-                            "you need integrate WA Sdk first");
-                    return result;
-                }
-
+                // 这里调用WA渠道的模块查询在线参数，获得Facebook的SecretKey
+                String facebookSecret = sharedPrefHelper.getString(WAConfig.SP_KEY_FB_SECRET_KEY, "");
                 if(StringUtil.isEmpty(facebookSecret)) {
-                    // 获取facebook secret失败了
-                    result.setCode(WACallback.CODE_ERROR);
-                    result.setMessage("Load facebook secret key failed");
-                    return result;
+                    if(!loadFBSecretKeyAndWait()) {
+                        result.setCode(WACallback.CODE_ERROR);
+                        result.setMessage("WAFBGraphObjects--Load facebook secret key failed");
+                        return result;
+                    }
+                    facebookSecret = sharedPrefHelper.getString(WAConfig.SP_KEY_FB_SECRET_KEY, "");
+                    if(StringUtil.isEmpty(facebookSecret)) {
+                        // 获取facebook secret失败了
+                        result.setCode(WACallback.CODE_ERROR);
+                        result.setMessage("WAFBGraphObjects--Load facebook secret key failed");
+                        return result;
+                    }
                 }
 
                 try {
@@ -326,22 +314,12 @@ public class WAFBGraphObjects extends WAFBGameService {
         /**
          * 从WA后台查询Facebook的Secret key
          */
-        private String loadFBSecretKeyAndWait() throws Exception {
-            String className = "com.wa.sdk.wa.core.WASdkOnlineParameter";
-            Class<?> cls = Class.forName(className);
-            Method getInstanceMethod = cls.getDeclaredMethod("getInstance");
-            Object instanceObject = getInstanceMethod.invoke(null);
-            Method loadParameterAndWaitMethod = cls.getDeclaredMethod("loadParameterAndWait");
-            Object resultObject = loadParameterAndWaitMethod.invoke(instanceObject);
-
-            Class<?> resultClass = resultObject.getClass();
-            Field fbSecretField = resultClass.getDeclaredField("fbSecretKey");
-            fbSecretField.setAccessible(true);
-            Object fbSecretObject = fbSecretField.get(resultObject);
-            if(fbSecretObject instanceof  String) {
-                return String.valueOf(fbSecretObject);
+        private boolean loadFBSecretKeyAndWait() {
+            if(WASdkProperties.getInstance().isComponentSupported(WAConstants.CHANNEL_WA, WAConstants.MODULE_CORE)) {
+                WAICore waCore = (WAICore) WAComponentFactory.createComponent(WAConstants.CHANNEL_WA, WAConstants.MODULE_CORE);
+                return null != waCore && waCore.loadOnlineParameterAndWaite();
             }
-            return null;
+            return false;
         }
     }
 }

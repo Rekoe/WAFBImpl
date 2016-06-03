@@ -126,14 +126,16 @@ public class WAFBInviteReward extends WAFacebook {
     /**
      * 邀请奖励上报，当用户第一次安装使用的时候(异步执行)
      * @param activity Activity对象
+     * @param platformToken Facebook平台token
      * @param callback 回调
      */
-    public void inviteInstallReward(final Activity activity, final WACallback<WAResult> callback) {
+    public void inviteInstallReward(final Activity activity, final String platformToken,
+                                    final WACallback<WAResult> callback) {
         checkAccount(null, new WACallback<WAResult>() {
             @Override
             public void onSuccess(int code, String message, WAResult result) {
                 if (WASdkProperties.getInstance().isOnServer()) {
-                    handleInviteInstall(activity, callback);
+                    handleInviteInstall(activity, platformToken, callback);
                 } else {
                     if (null != callback) {
                         callback.onError(WACallback.CODE_SERVER_ID_NOT_FOUND,
@@ -292,12 +294,12 @@ public class WAFBInviteReward extends WAFacebook {
 
     /**
      * 处理（被）邀请安装事件
-     * @param activity
-     * @param callback
+     * @param activity Actvity
+     * @param platformToken 平台token
+     * @param callback Callback回调
      */
-    private void handleInviteInstall(Activity activity, final WACallback<WAResult> callback) {
-        final WASharedPrefHelper loginSharedPref = WASharedPrefHelper.newInstance(activity,
-                WAConfig.SHARE_PRE_LOGIN_CONFIG);
+    private void handleInviteInstall(Activity activity, final String  platformToken,
+                                     final WACallback<WAResult> callback) {
         final WASharedPrefHelper sdkConfigSharedPref = WASharedPrefHelper.newInstance(activity,
                 WAConfig.SHARE_PRE_CONFIG);
         final AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -355,7 +357,7 @@ public class WAFBInviteReward extends WAFacebook {
                 }
 
                 FBInviteRewardTask task = new FBInviteRewardTask(requestIds, callback);
-                task.execute(loginSharedPref.getString(WAConfig.SP_KEY_LOGIN_PLATFORM_TOKEN, ""));
+                task.execute(platformToken);
             }
 
             @Override
