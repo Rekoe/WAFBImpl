@@ -49,8 +49,7 @@ public class WAFBLogin extends WAFacebook {
     private boolean mInitialized = false;
     private boolean mOnlyLoginPlatform = false;
 
-//    private Object mWALoginObject = null;
-private WAIUser mWAUser;
+    private WAIUser mWAUser;
 
     private WAFBLogin() {
         registerCallbackImpl(mCallbackManager,

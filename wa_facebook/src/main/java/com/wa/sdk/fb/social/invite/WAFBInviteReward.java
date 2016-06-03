@@ -22,7 +22,6 @@ import com.wa.sdk.core.WASdkProperties;
 import com.wa.sdk.fb.WAFBConstants;
 import com.wa.sdk.fb.WAFBVersion;
 import com.wa.sdk.fb.WAFacebook;
-import com.wa.sdk.fb.core.WAFBCore;
 import com.wa.sdk.fb.social.WAFBGameRequest;
 import com.wa.sdk.fb.social.WAFBGameService;
 import com.wa.sdk.social.model.WAFBGameRequestData;
