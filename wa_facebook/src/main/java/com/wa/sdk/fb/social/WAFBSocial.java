@@ -61,8 +61,8 @@ public class WAFBSocial implements WAISocial {
     }
 
     @Override
-    public void inviteInstallReward(Activity activity, String platformToken, WACallback<WAResult> callback) {
-        WAFBInviteReward.getInstance().inviteInstallReward(activity, platformToken, callback);
+    public void inviteInstallReward(Activity activity, WACallback<WAResult> callback) {
+        WAFBInviteReward.getInstance().inviteInstallReward(activity, callback);
     }
 
     @Override
