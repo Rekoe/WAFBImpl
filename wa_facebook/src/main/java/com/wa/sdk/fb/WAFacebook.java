@@ -14,7 +14,9 @@ import com.wa.sdk.common.model.WACallbackManagerImpl;
 import com.wa.sdk.common.model.WAResult;
 import com.wa.sdk.common.utils.LogUtil;
 import com.wa.sdk.common.utils.StringUtil;
+import com.wa.sdk.core.WAComponentFactory;
 import com.wa.sdk.core.WASdkProperties;
+import com.wa.sdk.user.WAIUser;
 import com.wa.sdk.user.model.WAAccount;
 import com.wa.sdk.user.model.WAAccountResult;
 import com.wa.sdk.user.model.WAUser;
@@ -75,7 +77,6 @@ public class WAFacebook {
             }
         }
 
-//        WAAccountManager.getInstance().queryBoundAccount(true, new WACallback<WAAccountResult>() {
         queryBoundAccount(true, new WACallback<WAAccountResult>() {
             @Override
             public void onSuccess(int code, String message, WAAccountResult result) {
@@ -180,21 +181,21 @@ public class WAFacebook {
      * @param callback 回调
      */
     protected void queryBoundAccount(boolean filterGuest, WACallback<WAAccountResult> callback) {
-        String className = "com.wa.sdk.wa.user.WAAccountManager";
-        try {
-            Class<?> waAccountManagerClass = Class.forName(className);
-            Method getInstanceMethod = waAccountManagerClass.getDeclaredMethod("getInstance");
-            Object waAccountManagerObject = getInstanceMethod.invoke(null);
-            Method queryBoundAccountMethod = waAccountManagerClass.getDeclaredMethod("queryBoundAccount",
-                    boolean.class, WACallback.class);
-            queryBoundAccountMethod.invoke(waAccountManagerObject, filterGuest, callback);
-        } catch (Exception e) {
-            LogUtil.e(WAFBConstants.TAG, "WAFacebook--Dependence of WA Sdk,"
-                    + "you need integrate WA Sdk first \n" + LogUtil.getStackTrace(e));
-            if(null != callback) {
-                callback.onError(WACallback.CODE_ERROR, "Dependence of WA Sdk, " +
-                        "you need integrate WA Sdk first", null, e);
+        if(WASdkProperties.getInstance().isComponentSupported(WAConstants.CHANNEL_WA, WAConstants.MODULE_USER)) {
+            WAIUser waUser = (WAIUser) WAComponentFactory.createComponent(WAConstants.CHANNEL_WA, WAConstants.MODULE_USER);
+            if(null == waUser) {
+                if(null != callback) {
+                    callback.onError(WACallback.CODE_ERROR, "Dependence of WA Sdk, " +
+                            "you need integrate WA Sdk first", null, null);
+                }
+                return;
             }
+            waUser.queryBoundAccount(filterGuest, callback);
+            return;
+        }
+        if(null != callback) {
+            callback.onError(WACallback.CODE_ERROR, "Dependence of WA Sdk, " +
+                    "you need integrate WA Sdk first", null, null);
         }
     }
 
@@ -204,21 +205,11 @@ public class WAFacebook {
      * @return
      */
     protected List<WAUser> queryWAUserIdAndWaite(List<WAUser> users) {
-        String className = "com.wa.sdk.wa.user.WAAccountManager";
-        try {
-            Class<?> waAccountManagerClass = Class.forName(className);
-            Method getInstanceMethod = waAccountManagerClass.getDeclaredMethod("getInstance");
-            Object waAccountManagerObject = getInstanceMethod.invoke(null);
-            Method queryBoundAccountMethod = waAccountManagerClass.getDeclaredMethod("queryWAUserIdAndWaite",
-                    String.class, List.class);
-            Object resultObject = queryBoundAccountMethod.invoke(waAccountManagerObject,
-                    WAConstants.CHANNEL_FACEBOOK, users);
-            if(null != resultObject && resultObject instanceof  List) {
-                return (List<WAUser>) resultObject;
+        if(WASdkProperties.getInstance().isComponentSupported(WAConstants.CHANNEL_WA, WAConstants.MODULE_USER)) {
+            WAIUser waUser = (WAIUser) WAComponentFactory.createComponent(WAConstants.CHANNEL_WA, WAConstants.MODULE_USER);
+            if(null != waUser) {
+                return waUser.queryWAUserIdAndWaite(WAConstants.CHANNEL_FACEBOOK, users);
             }
-        } catch (Exception e) {
-            LogUtil.e(WAFBConstants.TAG, "WAFacebook--Dependence of WA Sdk,"
-                    + "you need integrate WA Sdk first \n" + LogUtil.getStackTrace(e));
         }
         return null;
     }

@@ -11,6 +11,9 @@ import com.wa.sdk.user.model.WALoginResult;
 import com.wa.sdk.user.model.WAAccountCallback;
 import com.wa.sdk.user.model.WAAccountResult;
 import com.wa.sdk.user.model.WABindCallback;
+import com.wa.sdk.user.model.WAUser;
+
+import java.util.List;
 
 /**
  * Facebook 用户账户实现类
@@ -51,7 +54,7 @@ public class WAFBUser implements WAIUser {
     }
 
     @Override
-    public void queryBoundAccount(WACallback<WAAccountResult> callback) {
+    public void queryBoundAccount(boolean filterGuest, WACallback<WAAccountResult> callback) {
 
     }
 
@@ -63,6 +66,11 @@ public class WAFBUser implements WAIUser {
     @Override
     public void createNewAccount(WACallback<WALoginResult> callback) {
 
+    }
+
+    @Override
+    public List<WAUser> queryWAUserIdAndWaite(String platform, List<WAUser> users) {
+        return null;
     }
 
     @Override

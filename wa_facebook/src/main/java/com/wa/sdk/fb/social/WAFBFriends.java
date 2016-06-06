@@ -42,7 +42,7 @@ class WAFBFriends extends WAFBGameService {
 
     private static final String SDK_PARAMETER_DURATION = "fb_invite_duration";
 
-    private static long mInviteDuration = 0L;
+    private static long mInviteDuration = 1000 * 60 * 30L;
 
     private WACallback<WAFriendsResult> mQueryFriendsCallback;
     private QueryFriendsTask mQueryFriendsTask;
